@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
   stories: [
+    '../stories/command-dot/**/*.stories.@(tsx|mdx)',
     '../stories/docs/**/intro.stories.mdx',
     '../stories/docs/**/getting-started.stories.mdx',
     '../stories/docs/**/guide.stories.mdx',

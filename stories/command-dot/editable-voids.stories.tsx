@@ -31,9 +31,20 @@ import {
 } from "../config/initialValues";
 import { autoformatRules } from "../config/autoformatRules";
 import { EditableVoidPlugin } from "./EditableVoidPlugin";
-import { EDITABLE_VOID, FunctionType, ConstantType } from "./types";
+import { EDITABLE_VOID } from "./types";
+
+import {
+  DEFAULTS_HBSMENTION,
+  HBSMentionNodeData,
+  HBSMentionPlugin,
+  HBSMentionSelect,
+  useHBSMention,
+  withHBSMentions,
+  HBSMentionsScope,
+} from "./mention";
 
 export default {
+  component: Example,
   title: "CommandDot/Editable Voids",
 };
 
@@ -109,7 +120,26 @@ const plugins = [
     ],
   }),
   EditableVoidPlugin(),
+  HBSMentionPlugin({
+    hbsmention: {
+      ...DEFAULTS_HBSMENTION,
+      rootProps: {
+        onClick: (mentionable: HBSMentionNodeData) =>
+          console.info(mentionable),
+        prefix: text("prefix", "/"),
+        renderLabel: (
+          mentionable: HBSMentionNodeData
+        ) => JSON.stringify(mentionable),
+      },
+    },
+  }),
 ];
+
+const renderLabel = (
+  mentionable: HBSMentionNodeData
+) => {
+  return mentionable.scopeType.name
+};
 
 const withPlugins = [
   withReact,
@@ -120,12 +150,12 @@ const withPlugins = [
 ] as const;
 
 interface ExampleProps {
-  scope: Array<FunctionType | ConstantType>;
+  scope: HBSMentionsScope;
   setValue: (value: Array<Node>) => void;
   value: Array<Node>;
 }
 
-const defaultScope: Array<FunctionType | ConstantType> = [];
+const defaultScope: HBSMentionsScope = [];
 
 export const Example = ({
   scope = defaultScope,
@@ -136,22 +166,47 @@ export const Example = ({
   useEffect(() => {
     if (setValueProp) setValueProp(value);
   }, [value]);
-  const editor = useMemo(() => pipe(createEditor(), ...withPlugins), []);
-
-  // TODO: use `scope`
-
+  const editor = useMemo(
+    () =>
+      pipe(createEditor(), ...withPlugins, withHBSMentions({ scope })),
+    [scope]
+  );
+  const {
+    onAddMention,
+    onChangeMention,
+    onKeyDownMention,
+    search,
+    index,
+    target,
+    values,
+  } = useHBSMention({
+    maxSuggestions: 10,
+    trigger: "/",
+  });
   return (
     <Slate
       editor={editor}
       value={value}
-      onChange={(newValue) => setValue(newValue as SlateDocument)}
+      onChange={(newValue) => {
+        setValue(newValue as SlateDocument);
+        onChangeMention(editor);
+      }}
     >
       <EditablePlugins
-        readOnly={boolean("readOnly", false)}
+        onKeyDown={[onKeyDownMention]}
+        onKeyDownDeps={[index, search, target]}
         plugins={plugins}
         placeholder={text("placeholder", "Enter some text...")}
+        readOnly={boolean("readOnly", false)}
         spellCheck={boolean("spellCheck", true)}
         autoFocus
+      />
+      <HBSMentionSelect
+        at={target}
+        valueIndex={index}
+        options={values}
+        onClickMention={onAddMention}
+        renderLabel={renderLabel}
       />
     </Slate>
   );

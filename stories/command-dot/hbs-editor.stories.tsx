@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Node } from "slate";
-import {
-  options,
-} from "../config/initialValues";
-import { EDITABLE_VOID, FunctionType, ConstantType } from "./types";
+import { options } from "../config/initialValues";
+import type { HBSMentionsScope } from "./mention";
+import { EDITABLE_VOID } from "./types";
 
 import { Example } from "./editable-voids.stories";
 
@@ -13,74 +12,117 @@ export default {
 
 const initialValue: Node[] = [
   {
-    children: [
+    "children": [
       {
-        type: options.p.type,
-        children: [
+        "type": "p",
+        "children": [
           {
-            text:
-              "In addition to nodes that contain editable text, you can insert void nodes, which can also contain editable elements, inputs, or an entire other Slate editor.",
+            "text": ""
           },
-        ],
-      },
-      {
-        type: EDITABLE_VOID,
-        children: [{ text: "" }],
-      },
-      {
-        type: options.p.type,
-        children: [
           {
-            text: "",
+            "type": "hbs-mention",
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "scopeType": {
+              "name": "age",
+              "type": "number"
+            }
           },
-        ],
-      },
+          {
+            "type": "hbs-mention",
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "scopeType": {
+              "name": "add",
+              "parameters": [
+                {
+                  "allowUserInput": true,
+                  "type": "number"
+                },
+                {
+                  "allowUserInput": true,
+                  "type": "number",
+                  "value": {
+                    "name": "add",
+                    "parameters": [
+                      {
+                        "allowUserInput": true,
+                        "type": "number"
+                      },
+                      {
+                        "allowUserInput": true,
+                        "type": "number"
+                      }
+                    ],
+                    "returnType": "number",
+                    "type": "function"
+                  }
+                }
+              ],
+              "type": "function"
+            }
+          },
+          {
+            "text": ""
+          }
+        ]
+      }
+    ]
+  }
+];
+
+const scope: HBSMentionsScope = [
+  {
+    name: "add",
+    parameters: [
+      { allowUserInput: true, type: "number" },
+      { allowUserInput: true, type: "number" },
     ],
+    returnType: 'number',
+    type: "function",
+  },
+  {
+    name: "formatDate",
+    parameters: [{ type: "DateTime" }],
+    returnType: 'string',
+    type: "function",
+  },
+  {
+    name: "lowercase",
+    parameters: [{ type: "string" }],
+    returnType: 'string',
+    type: "function",
+  },
+  {
+    name: "age",
+    type: "number",
+  },
+  {
+    name: "birthdate",
+    type: "DateTime",
+  },
+  {
+    name: "favoriteHoliday",
+    type: "DateTime",
+  },
+  {
+    name: "name",
+    type: "string",
+  },
+  {
+    name: "location",
+    type: "string",
   },
 ];
 
 export const HBSEditor = () => {
   const [value, setValue] = useState(initialValue);
-  const scope: Array<FunctionType | ConstantType> = [
-    {
-      name: "add",
-      parameters: [
-        { allowUserInput: true, type: "number" },
-        { allowUserInput: true, type: "number" },
-      ],
-      type: "function",
-    },
-    {
-      name: "formatDate",
-      parameters: [{ type: "DateTime" }],
-      type: "function",
-    },
-    {
-      name: "lowercase",
-      parameters: [{ type: "string" }],
-      type: "function",
-    },
-    {
-      name: "age",
-      type: "number",
-    },
-    {
-      name: "birthdate",
-      type: "DateTime",
-    },
-    {
-      name: "favoriteHoliday",
-      type: "DateTime",
-    },
-    {
-      name: "name",
-      type: "string",
-    },
-    {
-      name: "location",
-      type: "string",
-    },
-  ];
   return (
     <>
       <Example scope={scope} setValue={setValue} value={value} />

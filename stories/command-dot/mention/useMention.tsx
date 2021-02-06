@@ -80,7 +80,7 @@ export const useHBSMention = (
           at: cursor,
           trigger,
         });
-
+console.log({beforeMatch,range,cursor,trigger})
         if (beforeMatch && isPointAtWordEnd(editor, { at: cursor })) {
           setTargetRange(range as Range);
           const [, word] = beforeMatch;
@@ -98,6 +98,8 @@ export const useHBSMention = (
     },
     [setTargetRange, setSearch, setValueIndex, trigger]
   );
+
+  console.log({search, values})
 
   return {
     search,

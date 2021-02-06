@@ -17,6 +17,6 @@ export const HBSMentionPlugin = (options?: HBSMentionPluginOptions): SlatePlugin
     renderElement: renderElementMention(options),
     deserialize: deserializeMention(options),
     inlineTypes: [hbsmention.type],
-    voidTypes: [hbsmention.type],
+    // voidTypes: [hbsmention.type], // void types don't render children
   };
 };

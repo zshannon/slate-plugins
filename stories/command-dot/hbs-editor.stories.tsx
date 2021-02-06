@@ -12,91 +12,54 @@ export default {
 
 const initialValue: Node[] = [
   {
-    "children": [
+    children: [
       {
-        "type": "p",
-        "children": [
+        type: "p",
+        children: [
           {
-            "text": ""
+            text: "",
           },
           {
-            "type": "hbs-mention",
-            "children": [
+            type: "hbs-mention",
+            children: [
               {
-                "text": ""
-              }
+                text: "",
+              },
             ],
-            "scopeType": {
-              "name": "age",
-              "type": "number"
-            }
+            scopeType: {
+              name: "age",
+              type: "number",
+            },
           },
           {
-            "type": "hbs-mention",
-            "children": [
-              {
-                "text": ""
-              }
-            ],
-            "scopeType": {
-              "name": "add",
-              "parameters": [
-                {
-                  "allowUserInput": true,
-                  "type": "number"
-                },
-                {
-                  "allowUserInput": true,
-                  "type": "number",
-                  "value": {
-                    "name": "add",
-                    "parameters": [
-                      {
-                        "allowUserInput": true,
-                        "type": "number"
-                      },
-                      {
-                        "allowUserInput": true,
-                        "type": "number"
-                      }
-                    ],
-                    "returnType": "number",
-                    "type": "function"
-                  }
-                }
-              ],
-              "type": "function"
-            }
+            text: "",
           },
-          {
-            "text": ""
-          }
-        ]
-      }
-    ]
-  }
+        ],
+      },
+    ],
+  },
 ];
 
 const scope: HBSMentionsScope = [
   {
     name: "add",
     parameters: [
-      { allowUserInput: true, type: "number" },
-      { allowUserInput: true, type: "number" },
+      { name: "left", inputType: "number", type: "parameter" },
+      { name: "right", inputType: "number", type: "parameter" },
     ],
-    returnType: 'number',
+    returnType: "number",
     type: "function",
   },
   {
     name: "formatDate",
-    parameters: [{ type: "DateTime" }],
-    returnType: 'string',
+    parameters: [{ name: "input", inputType: "DateTime", type: "parameter" }],
+    returnType: "string",
     type: "function",
   },
   {
     name: "lowercase",
-    parameters: [{ type: "string" }],
-    returnType: 'string',
+    parameters: [{ name: "input", inputType: "string", type: "parameter" }],
+    returnType: "string",
     type: "function",
   },
   {

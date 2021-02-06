@@ -112,19 +112,22 @@ export interface ScopeType {
   type: string;
 }
 
-const constantTypes = ["DateTime", "number", "string"];
+const valueTypes = ["DateTime", "number", "string"];
 
-export interface ConstantType extends ScopeType {
+export interface ValueType extends ScopeType {
   type: "DateTime" | "number" | "string";
 }
 
 export interface VariableType extends ScopeType {
   type: "variable";
-  variableType: ConstantType["type"];
+  variableType: ValueType["type"];
 }
 
-export type ParameterType = Omit<ConstantType | VariableType, "name"> & {
-  allowUserInput?: boolean;
+export type ParameterType = {
+  // allowUserInput?: boolean;
+  inputType: ValueType["type"];
+  name: string;
+  type: "parameter";
   value?: ScopeType;
 };
 
@@ -134,25 +137,33 @@ export interface FunctionType extends ScopeType {
   type: "function";
 }
 
-export type HBSMentionsScope = Array<FunctionType | ConstantType>;
+export type HBSMentionsScope = Array<FunctionType | ValueType>;
 
 export interface HBSMentionsEditor extends Editor {
   scope: HBSMentionsScope;
 }
 
-export const isConstant = (input: ScopeType): input is ConstantType =>
-  constantTypes.includes(input.type);
+export const isValue = (input: ScopeType): input is ValueType =>
+  valueTypes.includes(input.type);
 
 export const isFunction = (input: ScopeType): input is FunctionType =>
   input.type === "function";
 
+export const isParameter = (input: ScopeType): input is ParameterType =>
+  input.type === 'parameter';
+
 export const isVariable = (input: ScopeType): input is VariableType =>
   input.type === "variable";
 
-export const idForScopeType = (input: ScopeType | undefined) => {
-  if (!input) return `undef`
-  if (isConstant(input)) return `constant-${input.name}`
-  if (isVariable(input)) return `variable-${input.name}-${input.variableType}`
-  if (isFunction(input)) return `function-${input.name}-${input.returnType}-${input.parameters.length}`
+export const idForScopeType = (input: ScopeType | undefined): string => {
+  if (!input) return `undef`;
+  if (isValue(input)) return `value-${input.name}`;
+  if (isVariable(input)) return `variable-${input.name}-${input.variableType}`;
+  if (isFunction(input))
+    return `function-${input.name}-${input.returnType}-${input.parameters.length}`;
+  if (isParameter(input))
+    return `parameter-${input.name}-${input.type}-${idForScopeType(
+      input.value
+    )}`;
   return JSON.stringify(input);
 };
